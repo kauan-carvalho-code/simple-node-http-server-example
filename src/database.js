@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 import crypto from 'node:crypto';
 
-const databasePath = new URL('../database.json', import.meta.url);
+const databasePath = new URL('../db.json', import.meta.url);
 
 export class Database {
   #database = new Map();

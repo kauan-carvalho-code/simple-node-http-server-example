@@ -27,4 +27,8 @@ app.post('/users', (req, res) => {
   res.end(JSON.stringify(newUser));
 });
 
+app.delete('/users/:id', (req, res) => {
+  res.end('Hi')
+});
+
 app.init(3333);

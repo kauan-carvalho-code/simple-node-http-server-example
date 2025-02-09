@@ -1,18 +1,17 @@
-import http from 'http'
-
-import crypto from 'node:crypto';
-
-function generateEndpointHash(path, method) {
-  const data = `${path}-${method}`;
-  return crypto.createHash('sha256').update(data).digest('hex');
-}
+import http from 'http';
 
 class Endpoint {
   constructor(path, method, callback) {
     this.path = path;
     this.method = method;
     this.callback = callback;
-    this.hash = generateEndpointHash(path, method);
+    this.regex = this.#generateRegex(path);
+  }
+
+  #generateRegex(path) {
+    const parametersRegex = /:([a-zA-Z]+)/g;
+    const pathWithParameters = path.replaceAll(parametersRegex, '(?<$1>[a-zA-Z0-9\\-_]+)');
+    return new RegExp(`^${pathWithParameters}$`);
   }
 }
 
@@ -25,7 +24,7 @@ class AppError {
 
 export class App {
   constructor(config = {}) {
-    this.endpoints = new Map();
+    this.endpoints = [];
     this.config = config;
     this.defaultHeaders = this.config.headers || {};
   }
@@ -33,11 +32,11 @@ export class App {
   #createEndpoint(path, method, callback) {
     const endpoint = new Endpoint(path, method, callback);
 
-    if (this.endpoints.has(endpoint.hash)) {
-      throw new AppError('Endpoint already exists', 400);
+    if (this.endpoints.some(e => e.path === path && e.method === method)) {
+      throw new AppError(`Endpoint ${method} ${path} already exists`, 400);
     }
 
-    this.endpoints.set(endpoint.hash, endpoint);
+    this.endpoints.push(endpoint);
   }
 
   get(path, callback) {
@@ -46,6 +45,10 @@ export class App {
 
   post(path, callback) {
     this.#createEndpoint(path, 'POST', callback);
+  }
+
+  delete(path, callback) {
+    this.#createEndpoint(path, 'DELETE', callback);
   }
 
    #sendErrorResponse(err, res) {
@@ -73,6 +76,11 @@ export class App {
     }
   }
 
+  #extractParams(req, endpoint) {
+    const match = req.url.match(endpoint.regex)
+    req.params = match?.groups ?? {}
+  }
+
   init(port) {
     const server = http.createServer(async (req, res) => {
       for (const [headerName, headerValue] of Object.entries(this.defaultHeaders)) {
@@ -80,14 +88,17 @@ export class App {
       }
 
       const { method, url } = req;
-      const hash = generateEndpointHash(url, method);
 
-      const endpoint = this.endpoints.get(hash);
+      const endpoint = this.endpoints.find(endpoint => {
+        return endpoint.method === method && endpoint.regex.test(url)
+      });
 
       if (!endpoint) {
         this.#sendErrorResponse(new AppError('Not Found', 404), res);
         return;
       }
+
+      this.#extractParams(req, endpoint)
 
       if (['POST', 'PUT', 'PATCH'].includes(method)) {
         await this.#parseJSONBody(req);
