@@ -10,8 +10,8 @@ Este projeto é um exemplo simples de como implementar um servidor HTTP nativo d
 
 1. Clone este repositório:
    ```sh
-   git clone https://github.com/seu-usuario/nome-do-repositorio.git
-   cd nome-do-repositorio
+   git clone https://github.com/kauan-carvalho-code/simple-node-http-server-example.git
+   cd simple-node-http-server-example
    ```
 
 2. Execute o servidor:
