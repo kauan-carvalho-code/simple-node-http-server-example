@@ -59,8 +59,22 @@ class App {
     res.end(JSON.stringify({ error: 'Internal Server Error' }));
   }
 
+  async _parseJSONBody(req) {
+    const buffers = [];
+
+    for await (const chunk of req) {
+      buffers.push(chunk);
+    }
+
+    try {
+      req.body = JSON.parse(Buffer.concat(buffers).toString());
+    } catch {
+      req.body = {};
+    }
+  }
+
   init(port) {
-    const server = http.createServer((req, res) => {
+    const server = http.createServer(async (req, res) => {
       for (const [headerName, headerValue] of Object.entries(this.defaultHeaders)) {
         res.setHeader(headerName, headerValue);
       }
@@ -73,6 +87,10 @@ class App {
       if (!endpoint) {
         this._sendErrorResponse(new AppError('Not Found', 404), res);
         return;
+      }
+
+      if (['POST', 'PUT', 'PATCH'].includes(method)) {
+        await this._parseJSONBody(req);
       }
 
       try {
@@ -94,14 +112,25 @@ const app = new App({
   }
 });
 
-app.get('/', (_, res) => {
-  const data = { message: 'Hello from GET /' };
-  res.end(JSON.stringify(data));
+const users = new Set();
+
+app.get('/users', (_, res) => {
+  res.end(JSON.stringify(Array.from(users)));
 });
 
-app.post('/users', (_, res) => {
-  const data = { message: 'Hello from POST /users' };
-  res.end(JSON.stringify(data));
+app.post('/users', (req, res) => {
+  const { name, email } =  req.body;
+
+  const user = {
+    id: crypto.randomBytes(16).toString('hex'),
+    name,
+    email,
+    createdAt: new Date().toISOString(),
+  }
+
+  users.add(user);
+
+  res.end(JSON.stringify(user));
 });
 
 app.init(3333);
