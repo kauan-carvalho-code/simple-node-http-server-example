@@ -10,8 +10,14 @@ const app = new App({
 
 const database = new Database()
 
-app.get('/users', (_, res) => {
-  res.end(JSON.stringify(Array.from(database.select('users'))));
+app.get('/users', (req, res) => {
+  const { search } = req.query
+
+  const users = database.select('users', search ? {
+    name: search
+  } : {})
+
+  res.end(JSON.stringify(users));
 });
 
 app.post('/users', (req, res) => {

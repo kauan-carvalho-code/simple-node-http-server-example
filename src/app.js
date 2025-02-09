@@ -11,7 +11,7 @@ class Endpoint {
   #generateRegex(path) {
     const parametersRegex = /:([a-zA-Z]+)/g;
     const pathWithParameters = path.replaceAll(parametersRegex, '(?<$1>[a-zA-Z0-9\\-_]+)');
-    return new RegExp(`^${pathWithParameters}$`);
+    return new RegExp(`^${pathWithParameters}(?<query>\\?(.*))?$`);
   }
 }
 
@@ -80,9 +80,27 @@ export class App {
     }
   }
 
+  #extractQueryParams(query) {
+    if (!query) {
+      return {}
+    }
+
+    return query.substr(1).split('&').reduce((acc, curr) => {
+      const [key, value] = curr.split('=');
+
+      acc[key] = value;
+
+      return acc
+    }, {})
+  }
+
   #extractParams(req, endpoint) {
     const match = req.url.match(endpoint.regex)
-    req.params = { ...match?.groups }
+
+    const { query, ...params } = match?.groups 
+
+    req.params = params
+    req.query = this.#extractQueryParams(query)
   }
 
   init(port) {

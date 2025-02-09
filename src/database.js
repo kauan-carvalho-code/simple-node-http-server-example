@@ -20,12 +20,20 @@ export class Database {
     fs.writeFileSync(databasePath, JSON.stringify(Object.fromEntries(this.#database)));
   }
 
-  select(key) {
+  select(key, search) {
     if (!this.#database.has(key)) {
       return [];
     }
 
-    return this.#database.get(key);
+    if (Object.keys(search).length > 0) {
+      return Array.from(this.#database.get(key)).filter(data => {
+        return Object.entries(search).some(([key, value]) => {
+          return data[key].toLowerCase().includes(value.toLowerCase());
+        });
+      });
+    }
+
+    return Array.from(this.#database.get(key));
   }
 
   insert(key, data) {

@@ -1,11 +1,1 @@
-{
-  "users": [
-    {
-      "id": "c097fa3a-53f4-4649-97ad-4fa8b7f5873f",
-      "name": "Kauan Carvalho de Almeida",
-      "email": "kauanalmeida@example.com",
-      "createdAt": "2025-02-09T03:58:29.715Z",
-      "updatedAt": "2025-02-09T04:01:10.379Z"
-    }
-  ]
-}
+{"users":[{"id":"c097fa3a-53f4-4649-97ad-4fa8b7f5873f","name":"Kauan Carvalho de Almeida","email":"kauanalmeida@example.com","createdAt":"2025-02-09T03:58:29.715Z","updatedAt":"2025-02-09T04:01:10.379Z"},{"id":"74a04f70-f077-4d55-8bd8-444b527086a1","name":"Kauan Carvalho","email":"kauancarvalho@example.com","updatedAt":null,"createdAt":"2025-02-09T04:12:46.316Z"},{"id":"97a71c31-4f7b-4fba-89fa-9304367ddce8","name":"Kauan Carvalho","email":"kauancarvalho@example.com","updatedAt":null,"createdAt":"2025-02-09T04:17:52.583Z"},{"id":"0cf6edea-6b35-4e32-a1c6-7dc1b03257b4","name":"Kauan Carvalho","email":"kauancarvalho@example.com","updatedAt":null,"createdAt":"2025-02-09T04:17:58.374Z"},{"id":"c83d64d0-e83e-44cc-9ebe-f7c9ab4875de","name":"John Doe","email":"johndoe@example.com","updatedAt":null,"createdAt":"2025-02-09T04:27:10.529Z"}]}
