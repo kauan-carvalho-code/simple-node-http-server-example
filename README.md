@@ -16,7 +16,7 @@ Este projeto é um exemplo simples de como implementar um servidor HTTP nativo d
 
 2. Execute o servidor:
    ```sh
-   node server.js
+   node src/server.js
    ```
 
 3. O servidor será iniciado na porta `3333` e estará pronto para receber requisições.
