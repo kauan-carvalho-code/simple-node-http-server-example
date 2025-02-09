@@ -78,7 +78,7 @@ export class App {
 
   #extractParams(req, endpoint) {
     const match = req.url.match(endpoint.regex)
-    req.params = match?.groups ?? {}
+    req.params = { ...match?.groups }
   }
 
   init(port) {

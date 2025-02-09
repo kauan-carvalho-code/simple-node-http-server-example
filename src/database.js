@@ -45,4 +45,22 @@ export class Database {
 
     return newData
   }
+
+  delete(key, id) {
+    if (!this.#database.has(key)) {
+      return false;
+    }
+
+    const index = this.#database.get(key).findIndex(d => d.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this.#database.get(key).splice(index, 1);
+
+    this.#persist()
+
+    return true;
+  }
 }
