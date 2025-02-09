@@ -36,6 +36,7 @@ export class Database {
     const newData = {
       id: crypto.randomUUID(),
       ...data,
+      updatedAt: null,
       createdAt: new Date().toISOString(),
     }
 
@@ -44,6 +45,30 @@ export class Database {
     this.#persist()
 
     return newData
+  }
+
+  update(key, id, data) {
+    if (!this.#database.has(key)) {
+      return false;
+    }
+
+    const index = this.#database.get(key).findIndex(d => d.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    const updatedData = {
+      ...this.#database.get(key)[index],
+      ...data,
+      updatedAt: new Date().toISOString(),
+    }
+
+    this.#database.get(key)[index] = updatedData
+
+    this.#persist()
+
+    return updatedData;
   }
 
   delete(key, id) {

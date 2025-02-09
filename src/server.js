@@ -27,6 +27,14 @@ app.post('/users', (req, res) => {
   res.writeHead(201).end(JSON.stringify(newUser));
 });
 
+app.put('/users/:id', (req, res) => {
+  const { id } = req.params
+
+  const updatedUser = database.update('users', id, req.body)
+
+  return res.writeHead(200).end(JSON.stringify(updatedUser))
+})
+
 app.delete('/users/:id', (req, res) => {
   const { id } = req.params;
 

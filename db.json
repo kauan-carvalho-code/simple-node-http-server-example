@@ -1,1 +1,11 @@
-{"users":[]}
+{
+  "users": [
+    {
+      "id": "c097fa3a-53f4-4649-97ad-4fa8b7f5873f",
+      "name": "Kauan Carvalho de Almeida",
+      "email": "kauanalmeida@example.com",
+      "createdAt": "2025-02-09T03:58:29.715Z",
+      "updatedAt": "2025-02-09T04:01:10.379Z"
+    }
+  ]
+}

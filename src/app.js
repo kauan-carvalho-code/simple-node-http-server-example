@@ -47,6 +47,10 @@ export class App {
     this.#createEndpoint(path, 'POST', callback);
   }
 
+  put(path, callback) {
+    this.#createEndpoint(path, 'PUT', callback)
+  }
+
   delete(path, callback) {
     this.#createEndpoint(path, 'DELETE', callback);
   }
