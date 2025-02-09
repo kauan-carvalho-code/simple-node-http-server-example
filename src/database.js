@@ -41,11 +41,15 @@ export class Database {
       this.#database.set(key, []);
     }
 
+    const sanitizedData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+
     const newData = {
       id: crypto.randomUUID(),
-      ...data,
-      updatedAt: null,
-      createdAt: new Date().toISOString(),
+      ...sanitizedData,
+      updated_at: null,
+      created_at: new Date().toISOString(),
     }
 
     this.#database.get(key).push(newData);
@@ -59,23 +63,27 @@ export class Database {
     if (!this.#database.has(key)) {
       return false;
     }
-
+  
     const index = this.#database.get(key).findIndex(d => d.id === id);
-
+  
     if (index === -1) {
       return false;
     }
 
+    const sanitizedData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+  
     const updatedData = {
       ...this.#database.get(key)[index],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    }
-
-    this.#database.get(key)[index] = updatedData
-
-    this.#persist()
-
+      ...sanitizedData,
+      updated_at: new Date().toISOString(),
+    };
+  
+    this.#database.get(key)[index] = updatedData;
+  
+    this.#persist();
+  
     return updatedData;
   }
 

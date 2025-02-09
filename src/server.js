@@ -10,41 +10,80 @@ const app = new App({
 
 const database = new Database()
 
-app.get('/users', (req, res) => {
+app.get('/tasks', (req, res) => {
   const { search } = req.query
 
-  const users = database.select('users', search ? {
-    name: search
+  const tasks = database.select('tasks', search ? {
+    title: search,
+    description: search
   } : {})
 
-  res.end(JSON.stringify(users));
+  res.end(JSON.stringify(tasks));
 });
 
-app.post('/users', (req, res) => {
-  const { name, email } =  req.body;
+app.post('/tasks', (req, res) => {
+  const { title, description } =  req.body;
 
-  const user = {
-    name,
-    email,
+  if (!title || !description) {
+    return res.writeHead(400).end(JSON.stringify({ error: 'Title and description are required' }));
   }
 
-  const newUser = database.insert('users', user);
+  const task = {
+    title,
+    description,
+    completed_at: null
+  }
 
-  res.writeHead(201).end(JSON.stringify(newUser));
+  const newTask = database.insert('tasks', task);
+
+  res.writeHead(201).end(JSON.stringify(newTask));
 });
 
-app.put('/users/:id', (req, res) => {
+app.put('/tasks/:id', (req, res) => {
   const { id } = req.params
 
-  const updatedUser = database.update('users', id, req.body)
+  const { title, description } = req.body
 
-  return res.writeHead(200).end(JSON.stringify(updatedUser))
+  const task = database.select('tasks', { id })[0]
+
+  if (!task) {
+    return res.writeHead(404).end(JSON.stringify({ error: 'Task not found' }))
+  }
+
+  const updatedTask = database.update('tasks', id, {
+    title,
+    description
+  })
+
+  return res.writeHead(200).end(JSON.stringify(updatedTask))
 })
 
-app.delete('/users/:id', (req, res) => {
+app.patch('/tasks/:id/complete', (req, res) => {
+  const { id } = req.params
+
+  const task = database.select('tasks', { id })[0]
+
+  if (!task) {
+    return res.writeHead(404).end(JSON.stringify({ error: 'Task not found' }))
+  }
+
+  const updatedTask = database.update('tasks', id, {
+    completed_at: task.completed_at ? null : new Date().toISOString()
+  })
+
+  return res.writeHead(200).end(JSON.stringify(updatedTask))
+})
+
+app.delete('/tasks/:id', (req, res) => {
   const { id } = req.params;
 
-  database.delete('users', id)
+  const task = database.select('tasks', { id })[0]
+
+  if (!task) {
+    return res.writeHead(404).end(JSON.stringify({ error: 'Task not found' }))
+  }
+
+  database.delete('tasks', id)
 
   return res.writeHead(204).end()
 });

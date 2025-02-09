@@ -1,6 +1,6 @@
 # Node.js HTTP Server Example
 
-Este projeto é um exemplo simples de como implementar um servidor HTTP nativo do Node.js sem frameworks adicionais.
+Este projeto implementa um servidor HTTP utilizando Node.js sem frameworks adicionais. Ele gerencia requisições HTTP, mantém um banco de dados simples baseado em arquivos e fornece endpoints para manipular tarefas.
 
 ## 📌 Requisitos
 
@@ -23,69 +23,79 @@ Este projeto é um exemplo simples de como implementar um servidor HTTP nativo d
 
 ## 🌍 Endpoints Disponíveis
 
-| Método | Rota      | Descrição |
-|--------|----------|------------|
-| GET    | `/`      | Retorna uma mensagem de boas-vindas |
-| POST   | `/users` | Retorna uma mensagem para requisições POST |
+| Método | Rota                  | Descrição                                        |
+|--------|-----------------------|--------------------------------------------------|
+| GET    | `/tasks`              | Retorna a lista de tarefas                      |
+| POST   | `/tasks`              | Cria uma nova tarefa                            |
+| PUT    | `/tasks/:id`          | Atualiza título e descrição de uma tarefa       |
+| PATCH  | `/tasks/:id/complete` | Marca uma tarefa como concluída ou reabre       |
+| DELETE | `/tasks/:id`          | Exclui uma tarefa                               |
 
-### 📥 Exemplo de Requisição `GET /`
+### 📥 Exemplo de Requisição `GET /tasks`
 
 #### Usando `curl`
 ```sh
-curl -X GET http://localhost:3333/
+curl -X GET http://localhost:3333/tasks
 ```
 
 #### Resposta:
 ```json
-{
-  "message": "Hello from GET /"
-}
-```
-
-### 📤 Exemplo de Requisição `POST /users`
-
-#### Usando `curl`
-```sh
-curl -X POST http://localhost:3333/users
-```
-
-#### Resposta:
-```json
-{
-  "message": "Hello from POST /users"
-}
+[
+  {
+    "id": "123",
+    "title": "Comprar pão",
+    "description": "Ir à padaria comprar pão fresco",
+    "completed_at": null,
+    "created_at": "2024-01-01T12:00:00Z",
+    "updated_at": null
+  }
+]
 ```
 
 ## 🔧 Estrutura do Código
 
 ### `App` (Classe Principal)
-- Gerencia os endpoints.
-- Permite criar rotas `GET` e `POST`.
-- Trata erros de forma padronizada.
-- Usa `Map` para armazenar rotas de forma eficiente.
+- Gerencia os endpoints HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
+- Armazena as rotas de forma eficiente.
+- Processa requisições e respostas de maneira padronizada.
+- Suporta query params e extração de parâmetros dinâmicos de rotas.
+
+### `Database` (Banco de Dados Simples)
+- Gerencia os dados localmente via um arquivo JSON (`db.json`).
+- Permite inserir, buscar, atualizar e excluir registros.
+- Persistência garantida entre execuções do servidor.
 
 ### `Endpoint`
-- Representa uma rota específica.
-- Gera um hash único para cada combinação `path + method`.
+- Representa um endpoint específico do servidor.
+- Gera um regex para permitir parâmetros dinâmicos na URL.
 
 ### `AppError`
-- Classe de erro personalizada para manipulação de exceções.
+- Classe de erro personalizada para padronizar respostas de erro HTTP.
 
-## 📖 Como Funciona
+## 📂 Estrutura de Arquivos
 
-1. Cada endpoint é registrado na instância do `App` com um hash baseado na URL e método HTTP.
-2. O servidor escuta as requisições HTTP e verifica se a rota e método existem.
-3. Caso a rota seja encontrada, a função de callback associada é executada.
-4. Se a rota não existir, o servidor retorna um erro `404`.
-5. Todos os erros são tratados de forma centralizada com JSON estruturado.
+```
+📂 src
+ ├── 📄 app.js           # Lógica principal do servidor HTTP
+ ├── 📄 database.js      # Banco de dados baseado em arquivos
+ ├── 📄 server.js        # Configuração e inicialização do servidor
+ ├── 📂 streams
+ │    ├── 📄 import-csv.js # Script para importar tarefas a partir de um CSV
+```
 
-## 🛠 Personalização
+## 🛠 Importação de CSV
 
-Você pode facilmente adicionar mais métodos HTTP ou ajustar o comportamento do servidor:
-```js
-app.get('/about', (_, res) => {
-  res.end(JSON.stringify({ message: 'This is the about page' }));
-});
+O projeto permite importar tarefas a partir de um arquivo CSV usando o script `import-csv.js`. O arquivo CSV deve conter os seguintes campos:
+
+```
+title,description
+Comprar leite,Ir ao mercado comprar leite integral
+Estudar JavaScript,Revisar conceitos de closures
+```
+
+Para importar as tarefas:
+```sh
+node src/streams/import-csv.js
 ```
 
 ## 📜 Licença

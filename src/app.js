@@ -51,6 +51,10 @@ export class App {
     this.#createEndpoint(path, 'PUT', callback)
   }
 
+  patch(path, callback) {
+    this.#createEndpoint(path, 'PATCH', callback)
+  }
+
   delete(path, callback) {
     this.#createEndpoint(path, 'DELETE', callback);
   }
